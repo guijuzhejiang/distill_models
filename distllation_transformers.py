@@ -27,8 +27,10 @@ class ImageDistilTrainer(Trainer):
         self.teacher = teacher_model
         self.student = student_model
         self.loss_function = nn.KLDivLoss(reduction="batchmean")
+        #把 teacher 放到 GPU 上做前向推理；而 student 交给 Trainer 自动管理，所以不用手动 .to(device),自动放到正确设备
         device = Accelerator().device
         self.teacher.to(device)
+        self.teacher.requires_grad_(False)
         self.teacher.eval()
         self.temperature = temperature
         self.lambda_param = lambda_param
